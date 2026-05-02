@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+:root {
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-foreground: var(--foreground);
+  --font-asap: var(--font-asap);
+}
+
+body {
+  color: var(--foreground);
+  font-family: var(--font-asap), sans-serif;
+}
