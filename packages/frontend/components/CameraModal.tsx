@@ -86,7 +86,7 @@ export default function CameraModal({ onCapture, onClose }: CameraModalProps) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-50 bg-black flex flex-col"
+        className="fixed inset-0 z-50 bg-black flex flex-col rounded-2xl shadow-lg"
       >
         {/* Video fills the screen */}
         <div className="relative flex-1 overflow-hidden">
@@ -102,7 +102,7 @@ export default function CameraModal({ onCapture, onClose }: CameraModalProps) {
                 playsInline
                 muted
                 onCanPlay={() => setReady(true)}
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover rounded-2xl"
               />
               {!ready && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -134,7 +134,7 @@ export default function CameraModal({ onCapture, onClose }: CameraModalProps) {
         </div>
 
         {/* Bottom bar with shutter */}
-        <div className="flex items-center justify-center py-8 bg-black">
+        <div className="flex items-center justify-center py-8 bg-black rounded-2xl">
           <button
             type="button"
             onClick={handleCapture}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useGoBack } from "../../../components/PageTransition";
+import { useGoBack } from "../../../navigation/PageTransition";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";

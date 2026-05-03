@@ -77,7 +77,7 @@ export default function StepEmail() {
           className="rounded-lg border border-indigo-200 bg-white/80 px-4 py-2.5 text-sm text-indigo-900 placeholder-indigo-300 outline-none focus:ring-2 focus:ring-indigo-300 transition"
         />
         <FieldError message={errors.email?.message} />
-        <p className="text-xs text-indigo-300">
+        <p className="text-xs text-indigo-400">
           Only <span className="font-medium">@gmail.com</span> addresses are accepted
         </p>
       </div>

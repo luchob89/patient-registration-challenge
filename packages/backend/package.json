@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "db:seed": "tsx src/scripts/seed.ts",
+    "db:clear": "tsx src/scripts/clear.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
@@ -20,6 +22,7 @@
     "zod": "^4.4.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.4.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/multer": "^2.1.0",

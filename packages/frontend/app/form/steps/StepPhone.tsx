@@ -32,7 +32,6 @@ export default function StepPhone() {
   const savedCountryCode = useAppSelector((s) => s.patient.phoneCountryCode);
   const savedPhone = useAppSelector((s) => s.patient.phone);
 
-  // Derive the number part from the stored combined value (stored as +CCNUMBER)
   const savedNumber =
     savedCountryCode && savedPhone.startsWith(`+${savedCountryCode}`)
       ? savedPhone.slice(savedCountryCode.length + 1)
@@ -101,7 +100,7 @@ export default function StepPhone() {
         <FieldError
           message={errors.countryCode?.message ?? errors.number?.message}
         />
-        <p className="text-xs text-indigo-300">
+        <p className="text-xs text-indigo-400">
           Country code (e.g. <span className="font-medium">+598</span>) followed
           by your local number
         </p>

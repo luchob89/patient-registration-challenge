@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Asap } from "next/font/google";
-import StoreProvider from "../components/StoreProvider";
-import PageTransition from "../components/PageTransition";
+import StoreProvider from "../store/StoreProvider";
+import PageTransition from "../navigation/PageTransition";
 import "./globals.css";
 
 const asap = Asap({

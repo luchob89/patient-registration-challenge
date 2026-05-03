@@ -37,7 +37,6 @@ export default function PageTransition({
   const router = useRouter();
   const pathname = usePathname();
 
-  // The content actually rendered — frozen during exit so old page stays visible
   const [displayChildren, setDisplayChildren] = useState(children);
   const [opacity, setOpacity] = useState(1);
 
@@ -45,20 +44,17 @@ export default function PageTransition({
   const phase = useRef<"idle" | "exiting" | "navigating">("idle");
   const prevPathname = useRef(pathname);
 
-  // Keep displayed content in sync while we're not mid-transition
   useEffect(() => {
     if (phase.current === "idle") {
       setDisplayChildren(children);
     }
   }, [children]);
 
-  // When Next.js completes navigation, swap content and fade back in
   useEffect(() => {
     if (phase.current === "navigating" && pathname !== prevPathname.current) {
       prevPathname.current = pathname;
       pendingHref.current = null;
       phase.current = "idle";
-      // Batched: new content appears at opacity 0, then animates to 1
       setDisplayChildren(children);
       setOpacity(1);
     }
@@ -78,7 +74,6 @@ export default function PageTransition({
     setOpacity(0);
   }, []);
 
-  // After fade-out finishes, actually navigate
   const handleAnimationComplete = useCallback(() => {
     if (phase.current === "exiting" && pendingHref.current) {
       phase.current = "navigating";

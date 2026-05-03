@@ -10,6 +10,8 @@
     "build:backend": "pnpm --filter backend build",
     "docker:up": "docker compose up --build -d",
     "docker:down": "docker compose down",
-    "docker:logs": "docker compose logs -f"
+    "docker:logs": "docker compose logs -f",
+    "db:seed": "pnpm --filter backend db:seed",
+    "db:clear": "pnpm --filter backend db:clear"
   }
 }

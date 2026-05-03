@@ -6,6 +6,7 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import DetailRow from "./DetailRow";
 import ConfirmModal from "./ConfirmModal";
+import PhotoModal from "./PhotoModal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -33,6 +34,7 @@ export default function PatientCard({
   const [emailState, setEmailState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [deleteState, setDeleteState] = useState<"idle" | "deleting" | "error">("idle");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
 
   const registered = new Date(patient.createdAt).toLocaleString("en-US", {
     year: "numeric",
@@ -77,6 +79,13 @@ export default function PatientCard({
 
   return (
     <>
+      {zoomOpen && (
+        <PhotoModal
+          src={patient.photoUrl}
+          alt={`${patient.firstName} ${patient.lastName}`}
+          onClose={() => setZoomOpen(false)}
+        />
+      )}
       {confirmOpen && (
         <ConfirmModal
           title="Delete patient?"
@@ -95,11 +104,14 @@ export default function PatientCard({
           opacity: { delay: index * 0.04, duration: 0.3 },
           y: { delay: index * 0.04, duration: 0.3 },
         }}
-        onClick={() => setOpen((v) => !v)}
-        className="bg-white/70 backdrop-blur-sm rounded-2xl border border-white/80 shadow-sm overflow-hidden cursor-pointer select-none"
+        className="bg-white/70 backdrop-blur-sm rounded-2xl border border-white/80 shadow-sm overflow-hidden select-none"
       >
         {/* Document photo */}
-        <motion.div layout className="aspect-[3/4] overflow-hidden bg-slate-100">
+        <motion.div
+          layout
+          onClick={() => setOpen((v) => !v)}
+          className="relative aspect-[3/4] overflow-hidden bg-slate-100 cursor-pointer group"
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={patient.photoUrl}
@@ -107,12 +119,22 @@ export default function PatientCard({
             className="w-full h-full object-cover"
             loading="lazy"
           />
+          {/* Zoom button */}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setZoomOpen(true); }}
+            className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-black/50 transition"
+            aria-label="View full size"
+          >
+            <Image src="/icons/zoom.svg" alt="" width={16} height={16} unoptimized className="invert" />
+          </button>
         </motion.div>
 
         {/* Name + chevron */}
         <motion.div
           layout="position"
-          className="px-3 py-2.5 flex items-center justify-between gap-2"
+          onClick={() => setOpen((v) => !v)}
+          className="px-3 py-2.5 flex items-center justify-between gap-2 cursor-pointer"
         >
           <span className="font-semibold text-md text-gray-800 truncate">
             {patient.firstName} {patient.lastName}
@@ -159,7 +181,7 @@ export default function PatientCard({
                       ? "bg-green-50 text-green-600 border-green-200 focus:ring-green-300"
                       : emailState === "error"
                         ? "bg-red-50 text-red-500 border-red-200 focus:ring-red-300"
-                        : "bg-sky-200/70 text-indigo-800 border-sky-300 hover:bg-sky-300/70 focus:ring-sky-300"
+                        : "bg-sky-100/70 text-indigo-800 border-sky-300 hover:bg-sky-300/70 focus:ring-sky-300"
                   }`}
                 >
                   <Image src="/icons/send.svg" alt="" width={12} height={12} unoptimized />
@@ -183,7 +205,7 @@ export default function PatientCard({
                       : "bg-red-50 text-red-600 border-red-200 hover:bg-red-100 focus:ring-red-300"
                   }`}
                 >
-                  <Image src="/icons/trash.svg" alt="" width={12} height={12} unoptimized />
+                  <Image src="/icons/trash.svg" alt="" width={15} height={15} unoptimized />
                   {deleteState === "deleting"
                     ? "Deleting…"
                     : deleteState === "error"

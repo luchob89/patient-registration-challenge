@@ -14,7 +14,7 @@ import Button from "../../../components/Button";
 import CameraModal from "../../../components/CameraModal";
 import FieldError from "../../../components/FieldError";
 import SubmitModal from "../../../components/SubmitModal";
-import { useNavigate } from "../../../components/PageTransition";
+import { useNavigate } from "../../../navigation/PageTransition";
 import { applyRotation, dataUrlToBlob } from "../../../lib/imageHelpers";
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
