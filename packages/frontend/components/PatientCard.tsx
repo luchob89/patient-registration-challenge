@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import DetailRow from "./DetailRow";
 import ConfirmModal from "./ConfirmModal";
 import PhotoModal from "./PhotoModal";
+import EditModal from "./EditModal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -22,7 +23,7 @@ export interface Patient {
 }
 
 export default function PatientCard({
-  patient,
+  patient: initialPatient,
   index,
   onDeleted,
 }: {
@@ -30,11 +31,13 @@ export default function PatientCard({
   index: number;
   onDeleted?: (id: number) => void;
 }) {
+  const [patient, setPatient] = useState(initialPatient);
   const [open, setOpen] = useState(false);
   const [emailState, setEmailState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [deleteState, setDeleteState] = useState<"idle" | "deleting" | "error">("idle");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [zoomOpen, setZoomOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
   const registered = new Date(patient.createdAt).toLocaleString("en-US", {
     year: "numeric",
@@ -84,6 +87,13 @@ export default function PatientCard({
           src={patient.photoUrl}
           alt={`${patient.firstName} ${patient.lastName}`}
           onClose={() => setZoomOpen(false)}
+        />
+      )}
+      {editOpen && (
+        <EditModal
+          patient={patient}
+          onClose={() => setEditOpen(false)}
+          onSaved={(updated) => setPatient((prev) => ({ ...updated, photoUrl: prev.photoUrl }))}
         />
       )}
       {confirmOpen && (
@@ -196,6 +206,15 @@ export default function PatientCard({
 
                 <button
                   type="button"
+                  onClick={(e) => { e.stopPropagation(); setEditOpen(true); }}
+                  className="w-full flex items-center justify-center gap-2 text-xs px-3 py-1.5 rounded-lg font-semibold border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100 focus:ring-yellow-300"
+                >
+                  <Image src="/icons/pencil.svg" alt="" width={12} height={12} unoptimized style={{ filter: "invert(50%) sepia(80%) saturate(600%) hue-rotate(5deg)" }} />
+                  Edit Patient
+                </button>
+
+                <button
+                  type="button"
                   onClick={handleDelete}
                   disabled={deleteState === "deleting"}
                   className={`w-full flex items-center justify-center gap-2 text-xs px-3 py-1.5 rounded-lg font-semibold border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed
@@ -210,7 +229,7 @@ export default function PatientCard({
                     ? "Deleting…"
                     : deleteState === "error"
                       ? "Failed — retry"
-                      : "Delete User"}
+                      : "Delete Patient"}
                 </button>
               </div>
             </motion.div>

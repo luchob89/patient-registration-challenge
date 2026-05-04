@@ -37,3 +37,5 @@ export const createPatientSchema = z.object({
     .max(15)
     .regex(/^\d{6,15}$/, "Phone number must be 6–15 digits."),
 });
+
+export const editPatientSchema = createPatientSchema.partial();

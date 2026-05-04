@@ -5,7 +5,7 @@ import { Prisma } from "../generated/prisma/client";
 import { PatientGetPayload } from "../generated/prisma/models";
 import { sendRegistrationNotification } from "../helpers/notifications";
 import { sendRegistrationEmail } from "../helpers/email";
-import { querySchema, createPatientSchema } from "../validation/patientSchemas";
+import { querySchema, createPatientSchema, editPatientSchema } from "../validation/patientSchemas";
 
 export const patientListSelect = {
   id: true,
@@ -257,4 +257,67 @@ export async function resendEmail(req: Request, res: Response): Promise<void> {
   sendRegistrationEmail(patient);
 
   res.json({ message: "Confirmation email queued." });
+}
+
+/**
+ * PATCH /patients/:id
+ *
+ * Updates one or more fields of an existing patient record.
+ *
+ * @param {number} req.params.id              Patient ID
+ * @param {string} [req.body.firstName]       Updated first name
+ * @param {string} [req.body.lastName]        Updated last name
+ * @param {string} [req.body.email]           Updated email (must be unique)
+ * @param {string} [req.body.countryCode]     Updated phone country code (digits only)
+ * @param {string} [req.body.phone]           Updated phone number
+ * @returns {200} { data: PatientListItem }
+ * @returns {400} { error } — invalid id
+ * @returns {404} { error } — patient not found
+ * @returns {409} { errors } — email already taken by another patient
+ * @returns {422} { errors } — validation failure
+ */
+export async function editPatient(req: Request, res: Response): Promise<void> {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id < 1) {
+    res.status(400).json({ error: "Invalid patient id." });
+    return;
+  }
+
+  const parsed = editPatientSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(422).json({ errors: z.flattenError(parsed.error).fieldErrors });
+    return;
+  }
+
+  const { email, ...rest } = parsed.data;
+
+  if (email) {
+    const conflict = await prisma.patient.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+    if (conflict && conflict.id !== id) {
+      res.status(409).json({ errors: { email: ["This email is already registered."] } });
+      return;
+    }
+  }
+
+  try {
+    const updated = await prisma.patient.update({
+      where: { id },
+      data: { ...rest, ...(email ? { email } : {}) },
+      select: patientListSelect,
+    });
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    res.json({ data: { ...updated, photoUrl: `${baseUrl}/patients/${id}/photo` } });
+  } catch (err) {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2025"
+    ) {
+      res.status(404).json({ error: "Patient not found." });
+      return;
+    }
+    throw err;
+  }
 }

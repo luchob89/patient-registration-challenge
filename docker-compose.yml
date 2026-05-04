@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+
 services:
   db:
     image: postgres:16-alpine
@@ -15,21 +17,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-
-  backend:
-    build:
-      context: .
-      dockerfile: packages/backend/Dockerfile
-    restart: unless-stopped
-    ports:
-      - "3001:3001"
-    environment:
-      NODE_ENV: production
-      DATABASE_URL: postgresql://${POSTGRES_USER:-patient_user}:${POSTGRES_PASSWORD:-patient_pass}@db:5432/${POSTGRES_DB:-patient_db}
-      PORT: 3001
-    depends_on:
-      db:
-        condition: service_healthy
 
 volumes:
   postgres_data:

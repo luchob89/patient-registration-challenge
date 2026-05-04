@@ -5,6 +5,7 @@ import {
   checkEmail,
   getPatientPhoto,
   createPatient,
+  editPatient,
   deletePatient,
   resendEmail,
 } from "./patients.controller";
@@ -20,6 +21,8 @@ router.get("/:id/photo", getPatientPhoto);
 router.post("/", upload.single("photo"), createPatient);
 
 router.delete("/:id", deletePatient);
+
+router.patch("/:id", editPatient);
 
 router.post("/:id/resend-email", resendEmail);
 

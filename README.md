@@ -16,10 +16,19 @@ Make sure the following are installed before you begin:
 
 ## Setup
 
-### 1. Clone the repository
+### 1. Get the source code
+
+**If the repository is public**, clone it:
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/luchob89/patient-registration-challenge.git
+cd patient-registration-challenge
+```
+
+**If you received a `.zip` file**, extract it and navigate into the project root:
+
+```bash
+unzip patient-registration-challenge.zip
 cd patient-registration-challenge
 ```
 
