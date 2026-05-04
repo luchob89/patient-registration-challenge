@@ -1,2 +1,3 @@
 node_modules
 packages/frontend/.next
+.DS_Store
