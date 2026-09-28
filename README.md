@@ -1,6 +1,25 @@
 # Patient Registration Challenge
 
-A full-stack patient registration app built with **Next.js**, **Express**, **PostgreSQL**, and **Prisma**.
+A full-stack patient registration app: a multi-step form (personal info, contact, and an ID photo captured via camera or file upload) backed by an Express + PostgreSQL API, plus a paginated, sortable list of registered patients.
+
+This was originally built as a take-home coding challenge for a company, as part of a job interview process.
+
+## Screenshots
+
+| Home | Registration form | Camera capture | Patients list |
+| --- | --- | --- | --- |
+| ![Home screen](docs/screenshot-home.png) | ![Registration form](docs/screenshot-form.png) | ![Camera capture](docs/screenshot-camera.png) | ![Patients list](docs/screenshot-patients.png) |
+
+---
+
+## Features
+
+- **Multi-step registration form** (name, email, phone, ID photo) with validation mirrored on both the client (Zod + react-hook-form) and the server (Zod), so the API is never trusted to the frontend alone.
+- **Live duplicate-email check**: the email step calls the API as you submit it and blocks you from continuing if that address is already registered.
+- **ID photo capture two ways**: drag-and-drop / click-to-browse upload (JPEG, 5 MB max) via `react-dropzone`, or a live in-browser camera capture (with front/back camera toggle on supported devices) — either way, the photo can be rotated before submitting.
+- **Patient list** with pagination, sorting by name/email/registration date (case-insensitive), loading skeletons, an empty state, and an error state with retry.
+- **Email notifications**: a confirmation email is sent via Nodemailer/Mailtrap on successful registration, with a "resend" endpoint. The notification logic is written as a small abstraction so SMS can be dropped in later without touching other files.
+- Patient photos are stored in PostgreSQL and served back through a dedicated `/patients/:id/photo` endpoint rather than exposed as static files.
 
 ---
 
@@ -134,3 +153,15 @@ pnpm db:clear
 | Validation | Zod v4, react-hook-form |
 | Email | Nodemailer + Mailtrap SMTP sandbox |
 | Monorepo | pnpm workspaces |
+
+---
+
+## What I'd change for production
+
+This was built to a specific challenge brief, so a few things make sense to call out:
+
+- **Authentication**: there's no login or access control — anyone who can reach the API can list, create, or delete patient records. A real app handling patient data needs real auth and authorization.
+- **Email domain restriction**: registration only accepts `@gmail.com` addresses. This was a specific requirement of the original challenge, not a real-world constraint — production would accept any valid email.
+- **CORS**: the API currently allows all origins (`cors()` with no options). Fine for a local/demo setup, but a real deployment would restrict this to the actual frontend origin.
+- **Tests and CI**: there's no automated test suite or CI pipeline yet — both would be key before this handled real patient data.
+- **SMS notifications**: `notifications.ts` is already structured for it, but it's not implemented — see the TODO in that file.
